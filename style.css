@@ -1,0 +1,672 @@
+/* ==========================================================================
+   NEON TYPE - デザインシステム & スタイルシート
+   ========================================================================== */
+
+/* 1. CSS変数と基本設定 */
+:root {
+    --bg-dark: #070913;
+    --card-bg: rgba(13, 17, 33, 0.65);
+    
+    /* ネオンカラーパレット */
+    --neon-blue: #00f2fe;
+    --neon-blue-glow: rgba(0, 242, 254, 0.35);
+    
+    --neon-pink: #ff007f;
+    --neon-pink-glow: rgba(255, 0, 127, 0.35);
+    
+    --neon-purple: #9d4edd;
+    --neon-purple-glow: rgba(157, 78, 221, 0.35);
+    
+    --neon-red: #ff3366;
+    --neon-red-glow: rgba(255, 51, 102, 0.4);
+    
+    /* 文字色 */
+    --text-primary: #ffffff;
+    --text-muted: #94a3b8;
+    --text-typed: #00f2fe;
+    --text-untyped: rgba(255, 255, 255, 0.8);
+    --text-error: #ff3366;
+
+    /* トランジション */
+    --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* 全体初期化 */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    font-family: 'Outfit', 'Inter', 'Noto Sans JP', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* 2. ダイナミックな背景グロー（ネオンの光の球） */
+.bg-glow-1, .bg-glow-2 {
+    position: absolute;
+    width: 45vw;
+    height: 45vw;
+    border-radius: 50%;
+    filter: blur(140px);
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.45;
+}
+
+.bg-glow-1 {
+    background: radial-gradient(circle, var(--neon-blue) 0%, transparent 70%);
+    top: -10%;
+    left: -10%;
+    animation: floating 12s ease-in-out infinite alternate;
+}
+
+.bg-glow-2 {
+    background: radial-gradient(circle, var(--neon-purple) 0%, transparent 70%);
+    bottom: -10%;
+    right: -10%;
+    animation: floating 12s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes floating {
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+    100% {
+        transform: translate(5%, 8%) scale(1.15);
+    }
+}
+
+/* 3. アプリ全体のラッパー */
+.app-wrapper {
+    width: 90%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    z-index: 10;
+    padding: 2rem 0;
+}
+
+.app-header {
+    text-align: center;
+}
+
+#app-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+
+.app-subtitle {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+}
+
+/* 4. ガラスモーフィズムパネル */
+.glass-panel {
+    background: var(--card-bg);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    padding: 3rem 2rem;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.1s ease; /* ミス時のシェイクアニメーション用 */
+}
+
+/* 5. 画面コンテンツの切り替え */
+.screen-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+.hidden {
+    display: none !important;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- スタート画面 --- */
+.intro-section {
+    text-align: center;
+    max-width: 540px;
+}
+
+.section-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    letter-spacing: 0.02em;
+}
+
+.instruction-text {
+    color: var(--text-muted);
+    line-height: 1.7;
+    font-size: 1.05rem;
+}
+
+.setup-controls {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    width: 100%;
+    max-width: 320px;
+}
+
+.control-label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+.neon-select {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--text-primary);
+    padding: 0.8rem 1.2rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    outline: none;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.neon-select:focus {
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 15px var(--neon-blue-glow);
+}
+
+/* --- ゲーム画面 (プレイ中) --- */
+
+/* ステータスバー */
+.status-bar {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 16px;
+    padding: 1.2rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.status-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.status-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+}
+
+.status-value {
+    font-size: 1.8rem;
+    font-weight: 800;
+}
+
+.font-numeric {
+    font-family: 'Outfit', sans-serif;
+    font-variant-numeric: tabular-nums;
+}
+
+#timer-display {
+    color: var(--neon-blue);
+    text-shadow: 0 0 10px var(--neon-blue-glow);
+}
+
+/* 時間減少時の警告アニメーション */
+.timer-warning #timer-display {
+    color: var(--neon-red);
+    text-shadow: 0 0 15px var(--neon-red-glow);
+    animation: pulse-red 1s infinite alternate;
+}
+
+@keyframes pulse-red {
+    from { transform: scale(1); }
+    to { transform: scale(1.15); }
+}
+
+#wpm-display {
+    color: var(--neon-pink);
+    text-shadow: 0 0 10px var(--neon-pink-glow);
+}
+
+#accuracy-display {
+    color: var(--neon-purple);
+    text-shadow: 0 0 10px var(--neon-purple-glow);
+}
+
+/* お題表示エリア */
+.word-display-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+    width: 100%;
+    margin: 2rem 0;
+    min-height: 120px;
+    justify-content: center;
+}
+
+.japanese-display {
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--text-primary);
+    text-align: center;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.roma-display {
+    font-family: 'Outfit', 'Courier New', monospace;
+    font-size: 2.2rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-align: center;
+    word-break: break-all;
+    white-space: pre-wrap;
+}
+
+/* タイピング済み文字 */
+.typed {
+    color: var(--text-typed);
+    text-shadow: 0 0 15px var(--neon-blue-glow);
+}
+
+/* 未入力文字 */
+.untyped {
+    color: var(--text-untyped);
+}
+
+/* 現在のターゲット（次に入力する文字）のアンダーライン */
+.current-target {
+    border-bottom: 3px solid var(--neon-pink);
+    color: var(--text-primary);
+    text-shadow: 0 0 10px var(--neon-pink-glow);
+    animation: cursor-blink 0.8s infinite alternate;
+}
+
+@keyframes cursor-blink {
+    from { border-bottom-color: transparent; }
+    to { border-bottom-color: var(--neon-pink); }
+}
+
+.input-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-top: 1rem;
+    padding: 0.6rem 1.2rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--neon-blue);
+    box-shadow: 0 0 10px var(--neon-blue);
+    animation: dot-pulse 1.5s infinite;
+}
+
+@keyframes dot-pulse {
+    0% {
+        transform: scale(0.9);
+        opacity: 0.6;
+    }
+    50% {
+        transform: scale(1.3);
+        opacity: 1;
+        box-shadow: 0 0 15px var(--neon-blue);
+    }
+    100% {
+        transform: scale(0.9);
+        opacity: 0.6;
+    }
+}
+
+.indicator-text {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    letter-spacing: 0.03em;
+}
+
+/* --- 3. リザルト画面 --- */
+.result-title {
+    font-size: 2.8rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+}
+
+.result-subtitle {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    margin-top: -1rem;
+}
+
+.result-stats {
+    display: flex;
+    gap: 1.5rem;
+    width: 100%;
+    justify-content: center;
+    margin: 1rem 0;
+}
+
+.result-card {
+    flex: 1;
+    max-width: 240px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.result-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+}
+
+.card-blue::before { background: var(--neon-blue); }
+.card-purple::before { background: var(--neon-purple); }
+
+.card-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+}
+
+.card-value {
+    font-size: 2.8rem;
+    font-weight: 800;
+}
+
+.card-blue .card-value {
+    color: var(--neon-blue);
+    text-shadow: 0 0 15px var(--neon-blue-glow);
+}
+
+.card-purple .card-value {
+    color: var(--neon-purple);
+    text-shadow: 0 0 15px var(--neon-purple-glow);
+}
+
+.card-desc {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.result-details {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    max-width: 450px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    padding: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.detail-label {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.detail-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+#result-correct {
+    color: #4ade80;
+}
+
+#result-miss {
+    color: var(--neon-red);
+}
+
+.result-actions {
+    display: flex;
+    gap: 1.2rem;
+    width: 100%;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+/* ==========================================================================
+   6. ボタン & コントロールUI
+   ========================================================================== */
+
+/* ネオンテキスト効果 */
+.neon-text-blue {
+    color: var(--text-primary);
+    text-shadow: 0 0 8px rgba(255,255,255,0.3),
+                 0 0 20px var(--neon-blue-glow),
+                 0 0 40px var(--neon-blue-glow);
+}
+
+/* テキストグラデーション */
+.text-gradient-pink {
+    background: linear-gradient(135deg, #ffffff 30%, var(--neon-pink) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* プレミアムネオンボタン */
+.neon-btn {
+    position: relative;
+    padding: 1rem 2.2rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #ffffff;
+    background: rgba(15, 23, 42, 0.8);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: var(--transition-smooth);
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    text-transform: uppercase;
+}
+
+.neon-btn span {
+    z-index: 2;
+}
+
+/* 各色ボタンスタイル */
+.btn-pink {
+    border: 1px solid var(--neon-pink);
+    box-shadow: 0 0 15px rgba(255, 0, 127, 0.15);
+}
+
+.btn-pink:hover {
+    background: var(--neon-pink);
+    box-shadow: 0 0 25px var(--neon-pink-glow);
+    transform: translateY(-2px);
+}
+
+.btn-blue {
+    border: 1px solid var(--neon-blue);
+    box-shadow: 0 0 15px rgba(0, 242, 254, 0.15);
+}
+
+.btn-blue:hover {
+    background: var(--neon-blue);
+    color: #070913;
+    box-shadow: 0 0 25px var(--neon-blue-glow);
+    transform: translateY(-2px);
+}
+
+.btn-purple {
+    border: 1px solid var(--neon-purple);
+    box-shadow: 0 0 15px rgba(157, 78, 221, 0.15);
+}
+
+.btn-purple:hover {
+    background: var(--neon-purple);
+    box-shadow: 0 0 25px var(--neon-purple-glow);
+    transform: translateY(-2px);
+}
+
+.neon-btn:active {
+    transform: translateY(1px);
+}
+
+/* ==========================================================================
+   7. インタラクティブアニメーション & その他
+   ========================================================================== */
+
+/* ミスタイプ時のパネル揺れアニメーション */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-8px); }
+    40%, 80% { transform: translateX(8px); }
+}
+
+.shake-panel {
+    animation: shake 0.25s cubic-bezier(.36,.07,.19,.97) both;
+    border-color: var(--neon-red) !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 
+                0 0 25px rgba(255, 51, 102, 0.25) !important;
+}
+
+/* コピー通知トースト */
+#toast-notification {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: rgba(13, 17, 33, 0.9);
+    border: 1px solid var(--neon-purple);
+    box-shadow: 0 10px 25px rgba(157, 78, 221, 0.3);
+    color: #ffffff;
+    padding: 0.8rem 2rem;
+    border-radius: 30px;
+    font-size: 0.95rem;
+    z-index: 100;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s;
+    opacity: 0;
+    pointer-events: none;
+}
+
+#toast-notification.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+/* ==========================================================================
+   8. フッター & レスポンシブ対応
+   ========================================================================== */
+.app-footer {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.2);
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    margin-top: 1rem;
+}
+
+/* スマホ対応（メディアクエリ） */
+@media (max-width: 600px) {
+    #app-title {
+        font-size: 2.5rem;
+    }
+    
+    .glass-panel {
+        padding: 2rem 1.2rem;
+    }
+    
+    .section-title {
+        font-size: 1.8rem;
+    }
+    
+    .japanese-display {
+        font-size: 1.4rem;
+    }
+    
+    .roma-display {
+        font-size: 1.6rem;
+    }
+    
+    .result-stats {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .result-card {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .result-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .neon-btn {
+        width: 100%;
+    }
+}
