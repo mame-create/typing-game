@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEON TYPE - 爽快スタイリッシュタイピングゲーム</title>
+    <!-- SEO用のメタデータ -->
+    <meta name="description" content="NEON TYPEは、美しいダークネオンデザインと心地よい打鍵音が楽しめる、初心者向けの無料スタイリッシュタイピング練習ゲームです。GitHub公開対応。">
+    <meta name="keywords" content="タイピング, タイピングゲーム, タイピング練習, 無料ゲーム, JavaScript, ネオン">
+    <!-- OGP (SNSシェア用) の設定 -->
+    <meta property="og:title" content="NEON TYPE - 爽快スタイリッシュタイピングゲーム">
+    <meta property="og:description" content="美しいダークネオンデザインと心地よい打鍵音が楽しめる、初心者向けの無料スタイリッシュタイピング練習ゲームです。">
+    <meta property="og:type" content="website">
+    <!-- Google Fontsの読み込み（OutfitとInterを採用） -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <!-- スタイルシートのリンク -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 背景用のダイナミックグラデーションエフェクト -->
+    <div class="bg-glow-1" aria-hidden="true"></div>
+    <div class="bg-glow-2" aria-hidden="true"></div>
+
+    <main class="app-wrapper">
+        <header class="app-header">
+            <h1 id="app-title" class="neon-text-blue">NEON TYPE</h1>
+            <p class="app-subtitle">キーボードを叩いて、光と音を解き放とう</p>
+        </header>
+
+        <section id="game-container" class="glass-panel">
+            <!-- 1. スタート画面 -->
+            <div id="start-screen" class="screen-content">
+                <div class="intro-section">
+                    <h2 class="section-title text-gradient-pink">タイピングを始めよう</h2>
+                    <p class="instruction-text">
+                        表示される文字をローマ字で入力してください。<br>
+                        制限時間は60秒です。心地よい打鍵音と共にハイスコアを目指しましょう！
+                    </p>
+                </div>
+
+                <div class="setup-controls">
+                    <div class="control-group">
+                        <label for="category-select" class="control-label">ワードカテゴリ：</label>
+                        <select id="category-select" class="neon-select">
+                            <option value="words-easy">日常の言葉（やさしい）</option>
+                            <option value="words-programming">プログラミング用語（普通）</option>
+                            <option value="words-sentences">短い文章（難しい）</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button id="start-btn" class="neon-btn btn-pink">
+                    <span>GAME START</span>
+                </button>
+            </div>
+
+            <!-- 2. ゲーム画面 (プレイ中) -->
+            <div id="game-screen" class="screen-content hidden">
+                <!-- ステータスバー（残り時間、WPM、正確率） -->
+                <div class="status-bar">
+                    <div class="status-item" id="timer-box">
+                        <span class="status-label">TIME</span>
+                        <span id="timer-display" class="status-value font-numeric">60</span>
+                    </div>
+                    <div class="status-item" id="wpm-box">
+                        <span class="status-label">WPM</span>
+                        <span id="wpm-display" class="status-value font-numeric">0</span>
+                    </div>
+                    <div class="status-item" id="accuracy-box">
+                        <span class="status-label">ACCURACY</span>
+                        <span id="accuracy-display" class="status-value font-numeric">100%</span>
+                    </div>
+                </div>
+
+                <!-- お題表示エリア -->
+                <div class="word-display-area">
+                    <div id="word-japanese" class="japanese-display">読み込み中...</div>
+                    <div id="word-roma" class="roma-display">
+                        <!-- ここにJavaScriptで <span class="typed"> や <span class="untyped"> が挿入されます -->
+                    </div>
+                </div>
+
+                <!-- キーボード入力用の非表示の入力フォーカスエリア -->
+                <div class="input-indicator">
+                    <span class="pulse-dot"></span>
+                    <span class="indicator-text">キーボードで直接タイピングしてください</span>
+                </div>
+            </div>
+
+            <!-- 3. リザルト画面 (ゲーム終了後) -->
+            <div id="result-screen" class="screen-content hidden">
+                <h2 class="result-title text-gradient-pink">GAME OVER</h2>
+                <p class="result-subtitle">あなたのタイピングパフォーマンス結果</p>
+
+                <div class="result-stats">
+                    <div class="result-card card-blue">
+                        <span class="card-label">WPM (入力速度)</span>
+                        <span id="result-wpm" class="card-value font-numeric">0</span>
+                        <span class="card-desc">1分あたりの正解文字数</span>
+                    </div>
+                    <div class="result-card card-purple">
+                        <span class="card-label">ACCURACY (正確率)</span>
+                        <span id="result-accuracy" class="card-value font-numeric">0%</span>
+                        <span class="card-desc">誤入力の少なさ</span>
+                    </div>
+                </div>
+
+                <div class="result-details">
+                    <div class="detail-item">
+                        <span class="detail-label">正解タイプ数</span>
+                        <span id="result-correct" class="detail-value font-numeric">0</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">ミスタイプ数</span>
+                        <span id="result-miss" class="detail-value font-numeric">0</span>
+                    </div>
+                </div>
+
+                <div class="result-actions">
+                    <button id="restart-btn" class="neon-btn btn-blue">
+                        <span>もう一度プレイ</span>
+                    </button>
+                    <button id="share-btn" class="neon-btn btn-purple">
+                        <span>結果をコピーする</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- コピー完了通知用のトースト -->
+        <div id="toast-notification" class="toast-hidden">結果をクリップボードにコピーしました！</div>
+
+        <footer class="app-footer">
+            <p>&copy; 2026 NEON TYPE. Created for Web Typing Practice.</p>
+        </footer>
+    </main>
+
+    <!-- ゲームロジックのスクリプト -->
+    <script src="app.js"></script>
+</body>
+</html>
