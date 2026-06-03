@@ -19,14 +19,37 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- パーティクルエフェクトを描画する全画面キャンバス -->
+    <canvas id="particle-canvas" aria-hidden="true"></canvas>
+
     <!-- 背景用のダイナミックグラデーションエフェクト -->
     <div class="bg-glow-1" aria-hidden="true"></div>
     <div class="bg-glow-2" aria-hidden="true"></div>
 
     <main class="app-wrapper">
         <header class="app-header">
-            <h1 id="app-title" class="neon-text-blue">NEON TYPE</h1>
+            <div class="header-main">
+                <h1 id="app-title" class="neon-text-blue">NEON TYPE</h1>
+                <!-- BGMコントロールボタン -->
+                <button id="bgm-toggle-btn" class="bgm-btn icon-btn" title="BGMの再生/一時停止">
+                    <span class="icon-play">🔊 BGM ON</span>
+                </button>
+            </div>
             <p class="app-subtitle">キーボードを叩いて、光と音を解き放とう</p>
+
+            <!-- プレイヤー成長システム（レベル ＆ 経験値ゲージ） -->
+            <div class="player-growth-panel glass-panel-mini">
+                <div class="growth-info">
+                    <span class="growth-level-label">PLAYER LEVEL</span>
+                    <span id="player-level" class="growth-level-value font-numeric">Lv.1</span>
+                </div>
+                <div class="xp-container">
+                    <div id="xp-progress-bar" class="xp-bar" style="width: 0%;"></div>
+                </div>
+                <div class="growth-stats font-numeric">
+                    <span id="player-xp-text">0 / 100 XP</span>
+                </div>
+            </div>
         </header>
 
         <section id="game-container" class="glass-panel">
@@ -35,8 +58,9 @@
                 <div class="intro-section">
                     <h2 class="section-title text-gradient-pink">タイピングを始めよう</h2>
                     <p class="instruction-text">
-                        表示される文字をローマ字で入力してください。<br>
-                        制限時間は60秒です。心地よい打鍵音と共にハイスコアを目指しましょう！
+                        表示される日本語をローマ字で入力してください。<br>
+                        表記揺れ（例: し=si/shi、ち=ti/chiなど）に完全対応！<br>
+                        制限時間は60秒。コンボを繋げてハイスコアを狙いましょう！
                     </p>
                 </div>
 
@@ -51,6 +75,25 @@
                     </div>
                 </div>
 
+                <!-- 過去のハイスコア表示エリア -->
+                <div class="highscore-panel">
+                    <span class="highscore-title">🏆 カテゴリ別自己ベスト</span>
+                    <div class="highscore-grid font-numeric">
+                        <div class="highscore-item">
+                            <span class="highscore-label">やさしい</span>
+                            <span id="best-easy" class="highscore-value">- WPM</span>
+                        </div>
+                        <div class="highscore-item">
+                            <span class="highscore-label">普通</span>
+                            <span id="best-programming" class="highscore-value">- WPM</span>
+                        </div>
+                        <div class="highscore-item">
+                            <span class="highscore-label">難しい</span>
+                            <span id="best-sentences" class="highscore-value">- WPM</span>
+                        </div>
+                    </div>
+                </div>
+
                 <button id="start-btn" class="neon-btn btn-pink">
                     <span>GAME START</span>
                 </button>
@@ -58,7 +101,7 @@
 
             <!-- 2. ゲーム画面 (プレイ中) -->
             <div id="game-screen" class="screen-content hidden">
-                <!-- ステータスバー（残り時間、WPM、正確率） -->
+                <!-- ステータスバー（残り時間、WPM、正確率、コンボ数） -->
                 <div class="status-bar">
                     <div class="status-item" id="timer-box">
                         <span class="status-label">TIME</span>
@@ -72,26 +115,43 @@
                         <span class="status-label">ACCURACY</span>
                         <span id="accuracy-display" class="status-value font-numeric">100%</span>
                     </div>
+                    <div class="status-item" id="combo-box">
+                        <span class="status-label">COMBO</span>
+                        <span id="combo-display" class="status-value font-numeric">0</span>
+                    </div>
                 </div>
 
                 <!-- お題表示エリア -->
                 <div class="word-display-area">
                     <div id="word-japanese" class="japanese-display">読み込み中...</div>
                     <div id="word-roma" class="roma-display">
-                        <!-- ここにJavaScriptで <span class="typed"> や <span class="untyped"> が挿入されます -->
+                        <!-- JSで動的に <span class="typed"> などの文字が挿入されます -->
                     </div>
                 </div>
 
-                <!-- キーボード入力用の非表示の入力フォーカスエリア -->
+                <!-- 仮想キーボード（ガイド点灯機能付き） -->
+                <div id="virtual-keyboard" class="keyboard-container">
+                    <div class="keyboard-row">
+                        <kbd data-key="q">Q</kbd><kbd data-key="w">W</kbd><kbd data-key="e">E</kbd><kbd data-key="r">R</kbd><kbd data-key="t">T</kbd><kbd data-key="y">Y</kbd><kbd data-key="u">U</kbd><kbd data-key="i">I</kbd><kbd data-key="o">O</kbd><kbd data-key="p">P</kbd><kbd data-key="-">-</kbd>
+                    </div>
+                    <div class="keyboard-row">
+                        <kbd data-key="a">A</kbd><kbd data-key="s">S</kbd><kbd data-key="d">D</kbd><kbd data-key="f">F</kbd><kbd data-key="g">G</kbd><kbd data-key="h">H</kbd><kbd data-key="j">J</kbd><kbd data-key="k">K</kbd><kbd data-key="l">L</kbd>
+                    </div>
+                    <div class="keyboard-row">
+                        <kbd data-key="z">Z</kbd><kbd data-key="x">X</kbd><kbd data-key="c">C</kbd><kbd data-key="v">V</kbd><kbd data-key="b">B</kbd><kbd data-key="n">N</kbd><kbd data-key="m">M</kbd>
+                    </div>
+                </div>
+
                 <div class="input-indicator">
                     <span class="pulse-dot"></span>
-                    <span class="indicator-text">キーボードで直接タイピングしてください</span>
+                    <span class="indicator-text">ピンクに光るキーをタイピングしてください</span>
                 </div>
             </div>
 
             <!-- 3. リザルト画面 (ゲーム終了後) -->
             <div id="result-screen" class="screen-content hidden">
                 <h2 class="result-title text-gradient-pink">GAME OVER</h2>
+                <div id="highscore-badge" class="badge-new hidden">🏆 自己ベスト更新！</div>
                 <p class="result-subtitle">あなたのタイピングパフォーマンス結果</p>
 
                 <div class="result-stats">
@@ -115,6 +175,10 @@
                     <div class="detail-item">
                         <span class="detail-label">ミスタイプ数</span>
                         <span id="result-miss" class="detail-value font-numeric">0</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">獲得した経験値</span>
+                        <span id="result-xp" class="detail-value font-numeric" style="color: #a855f7;">+0 XP</span>
                     </div>
                 </div>
 
